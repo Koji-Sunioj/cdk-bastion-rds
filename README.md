@@ -2,6 +2,18 @@
 
 the name of the stack has to do with Aurora, as I was originally testing out Aurora-PostgresQL database with bastion host. However, it seemed expensive so I switched to a minimal Databasse instance and hopefully it parsed with free tier. Name is misleading, since there is no Aurora provisioned database - however there is no way to rename the stack at this point unless I tear it down and init a CDK project from a different folder.§
 
+# Purpose
+
+to bootstrap a backend with Api Gateway, Lambda Function, a PostgresQL database which the lambda can access with Secrets manager, and using an EC2 instance deployed in the public subnet of the VPC which the RDS resides in order to access / create tables.
+
+useful commands for starting / stopping / describing the bastion host (displayed in the terminal during 'cdk-deploy':
+
+```
+aws ec2 stop-instances --instance-ids <instance id>
+aws ec2 start-instances --instance-ids <instance id>
+aws ec2 describe-instance-status --instance-id <instance id>
+```
+
 # Welcome to your CDK TypeScript project
 
 This is a blank project for CDK development with TypeScript.
