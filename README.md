@@ -12,7 +12,14 @@ useful commands for starting / stopping / describing the bastion host (displayed
 aws ec2 stop-instances --instance-ids <instance id>
 aws ec2 start-instances --instance-ids <instance id>
 aws ec2 describe-instance-status --instance-id <instance id>
+aws ec2 describe-instances --instance-ids i-003ef474d8f3ac370 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
 ```
+Note that the public IP address of the EC2 bastion host can change when starting / stopping. can query the address this way:
+
+```
+aws ec2 describe-instances --instance-ids <instance id> --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
+```
+
 
 # Welcome to your CDK TypeScript project
 

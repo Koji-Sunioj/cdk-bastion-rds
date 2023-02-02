@@ -26,6 +26,7 @@ export class AuroratestStack extends cdk.Stack {
         ec2.InstanceSize.MICRO
       ),
       databaseName: "posts",
+      deletionProtection: true,
     });
 
     const bastionSG = new ec2.SecurityGroup(this, "BastionSG", { vpc });
