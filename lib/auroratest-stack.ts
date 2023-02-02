@@ -8,7 +8,7 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 export class AuroratestStack extends cdk.Stack {
-  public readonly test: cdk.CfnOutput;
+  public readonly bastionId: cdk.CfnOutput;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -51,7 +51,7 @@ export class AuroratestStack extends cdk.Stack {
       keyName: "hey",
     });
 
-    this.test = new cdk.CfnOutput(this, "Ec2BastionId", {
+    this.bastionId = new cdk.CfnOutput(this, "Ec2BastionId", {
       value: bastion.instanceId,
     });
 
@@ -62,6 +62,7 @@ export class AuroratestStack extends cdk.Stack {
       code: lambda.Code.fromAsset("lambda"),
       handler: "dbLambda.handler",
       environment: { DB_SECRET: dataBase.secret?.secretName! },
+      vpc: vpc,
     });
 
     postsLambda.role?.attachInlinePolicy(
