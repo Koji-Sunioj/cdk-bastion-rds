@@ -27,7 +27,7 @@ exports.handler = async function (event, context) {
       case "GET /posts":
         command =
           "SELECT posts.post_id, posts.title,posts.content,posts.user_name, posts.created,\
-          array_agg(row_to_json(comments)) AS comments from posts JOIN\
+          array_agg(row_to_json(comments)) AS comments from posts LEFT JOIN\
           comments ON comments.post_id = posts.post_id GROUP BY posts.post_id order by posts.created asc";
         query = await pool.query(command);
         returnObject = { posts: query.rows };
@@ -42,8 +42,8 @@ exports.handler = async function (event, context) {
       case "GET /posts/{postId}":
         ({ postId } = pathParameters);
         command = `SELECT posts.post_id, posts.title, posts.content, posts.user_name, posts.created,\
-        array_agg(row_to_json(comments)) AS comments from posts  JOIN comments ON comments.post_id = \
-        ${postId} where posts.post_id = 1 GROUP BY posts.post_id;`;
+        array_agg(row_to_json(comments)) AS comments from posts LEFT JOIN comments ON comments.post_id = \
+        posts.post_id where posts.post_id=${postId} GROUP BY posts.post_id;`;
         query = await pool.query(command);
         returnObject = { post: query.rows[0] };
         break;
