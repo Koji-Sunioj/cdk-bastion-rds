@@ -8,31 +8,20 @@ to bootstrap a backend with Api Gateway, Lambda Function, a PostgresQL database 
 
 # Workflow
 
-When the instance is booted up, you can access the database by ssh'ing into the instance, installing postgres client, and connecting to the rds instance in the same (private subnet) vpc:
+When the instance is booted up, you can access the database by 1) ssh'ing into the instance, 2) installing postgres client, and 3) connecting to the rds instance in the same (private subnet) vpc. I already have a key-pair called hey, so the name reference is what you have in your console as well:
 
 ```
-ssh -i "<your ssh key from the bastion host's ec2 console, for example>.pem" <Public IPv4 DNS>
+ssh -i "hey.pem" ubuntu@<Public IPv4 DNS>
 sudo apt-get update
 sudo apt-get -y install postgresql
-psql -h <Endpoint> -p 5432 -U postgres posts -W
-```
-then enter the password which is available in secrets manager. the ssm is filled once the stack is built. stop and start the instance as needed (to maintain that the database cannot be accessed).
-
-useful commands for starting / stopping / describing the bastion host (displayed in the terminal during 'cdk-deploy':
-
-```
-aws ec2 stop-instances --instance-ids <instance id>
-aws ec2 start-instances --instance-ids <instance id>
-aws ec2 describe-instance-status --instance-id <instance id>
-```
-Note that the public IP address of the EC2 bastion host can change when starting / stopping. can query the address this way:
-
-```
-aws ec2 describe-instances --instance-ids <instance id> --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
+psql -h <RDS Endpoint> -p 5432 -U postgres posts -W
 ```
 
-# SQL schema according to the lambda's syntax
+Then enter the password into psql which is available in secrets manager, change over the database named in the stack and create some tables. the ssm is filled once the stack is built. 
+
 ```
+\c posts
+
 create table posts(
     post_id serial primary key,
     user_name varchar,
@@ -47,10 +36,28 @@ create table comments(
     content varchar,
     created timestamp default now(),
     FOREIGN KEY (post_id)
-   REFERENCES posts (post_id) 
+    REFERENCES posts (post_id) 
     on delete cascade
 );
 ```
+
+Stop and start the bastion host instance as needed (to maintain that the database cannot be accessed). Useful commands for starting / stopping / describing the bastion host state:
+
+```
+aws ec2 stop-instances --instance-ids <instance id>
+aws ec2 start-instances --instance-ids <instance id>
+aws ec2 describe-instance-status --instance-id <instance id>
+```
+Note that the public IP address of the EC2 bastion host can change when starting / stopping. can parse the DNS into a linux variable and ssh into it (or just grab the new DNS from the console):
+
+```
+DNS=$(aws ec2 describe-instances --instance-ids i-003ef474d8f3ac370 --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
+ssh -i "hey.pem" ubuntu@${DNS}
+```
+
+# What I learned
+
+SQL is a very well defined, flexible and common database language to use. However, some downsides are how verbose the syntax can be. Also Postgres does not handle stored procedures in the same way as MySQL, but has some good things like parsing grouped rows into JSON objects, and ad-hoc sorting a column which is not indexed, or defined in a special way (like in Dynamodb).
 
 # Welcome to your CDK TypeScript project
 
