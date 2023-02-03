@@ -30,7 +30,6 @@ exports.handler = async function (event) {
     "DELETE /posts/{postId}",
     "PATCH /posts/{postId}",
     "POST /posts/{postId}",
-    "DELETE /posts/{postId}/{commentId}",
   ];
 
   if (needsId.includes(routeKey)) {

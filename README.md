@@ -6,6 +6,18 @@ the name of the stack has to do with Aurora, as I was originally testing out Aur
 
 to bootstrap a backend with Api Gateway, Lambda Function, a PostgresQL database which the lambda can access with Secrets manager, and using an EC2 instance deployed in the public subnet of the VPC which the RDS resides in order to access / create tables.
 
+# Workflow
+
+When the instance is booted up, you can access the database by ssh'ing into the instance, installing postgres client, and connecting to the rds instance in the same (private subnet) vpc:
+
+```
+ssh -i "<your ssh key from the bastion host's ec2 console, for example>.pem" <Public IPv4 DNS>
+sudo apt-get update
+sudo apt-get -y install postgresql
+psql -h <Endpoint> -p 5432 -U postgres posts -W
+```
+then enter the password which is available in secrets manager. the ssm is filled once the stack is built. stop and start the instance as needed (to maintain that the database cannot be accessed).
+
 useful commands for starting / stopping / describing the bastion host (displayed in the terminal during 'cdk-deploy':
 
 ```
