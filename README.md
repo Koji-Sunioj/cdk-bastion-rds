@@ -18,8 +18,8 @@ Note that the public IP address of the EC2 bastion host can change when starting
 ```
 aws ec2 describe-instances --instance-ids <instance id> --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
 ```
-#SQL schema according to the lambda's syntax
 
+# SQL schema according to the lambda's syntax
 ```
 create table posts(
     post_id serial primary key,
@@ -35,7 +35,7 @@ create table comments(
     content varchar,
     created timestamp default now(),
     FOREIGN KEY (post_id)
-    REFERENCES posts (post_id) 
+   REFERENCES posts (post_id) 
     on delete cascade
 );
 ```

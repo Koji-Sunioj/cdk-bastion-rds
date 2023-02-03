@@ -12,7 +12,9 @@ export class AuroratestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, "Aurora-VPC");
+    const vpc = new ec2.Vpc(this, "Aurora-VPC", {
+      natGateways: 1,
+    });
 
     const engine = rds.DatabaseInstanceEngine.postgres({
       version: rds.PostgresEngineVersion.VER_14_5,
@@ -95,6 +97,12 @@ export class AuroratestStack extends cdk.Stack {
     post.addMethod("GET");
     post.addMethod("DELETE");
     post.addMethod("PATCH");
+    post.addMethod("POST");
+
+    const comment = post.addResource("{commentId}", {
+      defaultMethodOptions: { apiKeyRequired: true },
+    });
+    comment.addMethod("DELETE");
 
     const plan = postsApi.addUsagePlan("UsagePlan", {
       name: "postApiPlan",
